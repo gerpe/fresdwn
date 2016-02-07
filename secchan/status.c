@@ -103,6 +103,39 @@ switch_status_remote_packet_cb(struct relay *r, void *ss_)
         return false;
     }
 
+    /*
+     *   Faz o Tratamento do recebimento do STATUS do  FRESDWN
+     */
+    if (request->header.type == OFPT_EXPERIMENTER
+        && request->vendor == htonl(FRESDWN_VENDOR_ID)
+        && request->subtype == htonl(FRESDWNT_STATUS_REQUEST)
+       ) {
+	    sr.request.string = (void *) (request + 1);
+	    sr.request.length = msg->size - sizeof *request;
+	    ds_init(&sr.output);
+	    for (c = ss->categories; c < &ss->categories[ss->n_categories]; c++)
+	    {
+		if (!memcmp(c->name, sr.request.string,
+			    MIN(strlen(c->name), sr.request.length))) {
+		    sr.category = c;
+		    c->cb(&sr, c->aux);
+		}
+	    }
+	    reply = make_openflow_xid(sizeof *reply + sr.output.length,
+				    OFPT_EXPERIMENTER, request->header.xid, &b);
+	    reply->vendor = htonl(FRESDWN_VENDOR_ID);
+	    reply->subtype = htonl(FRESDWNT_STATUS_REPLY);
+	    memcpy(reply + 1, sr.output.string, sr.output.length);
+	    retval = rconn_send(rc, b, NULL);
+	    if (retval && retval != EAGAIN) {
+		VLOG_WARN(LOG_MODULE, "send failed (%s)", strerror(retval));
+	    }
+	    ds_destroy(&sr.output);
+            return true;
+    }
+    /*
+     *   Continua o tratamento do NICIRA
+     */
     sr.request.string = (void *) (request + 1);
     sr.request.length = msg->size - sizeof *request;
     ds_init(&sr.output);
