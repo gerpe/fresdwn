@@ -27,6 +27,9 @@
 
 #define NX_VENDOR_ID 0x00002320
 
+#define FRESDWN_OUI_STR "000005"
+
+#define FRESDWN_VENDOR_ID 0x00000005
 enum nicira_type {
     /* Switch status request.  The request body is an ASCII string that
      * specifies a prefix of the key names to include in the output; if it is
@@ -176,6 +179,174 @@ struct nx_action_header {
     uint8_t pad[6];
 };
 OFP_ASSERT(sizeof(struct nx_action_header) == 16);
+
+
+/*
+ *
+ *      FRESDWN
+ *
+ */
+
+
+
+enum fresdwn_type {
+    /* Switch status request.  The request body is an ASCII string that
+     * specifies a prefix of the key names to include in the output; if it is
+     * the null string, then all key-value pairs are included. */
+    FRESDWNT_STATUS_REQUEST,
+
+    /* Switch status reply.  The reply body is an ASCII string of key-value
+     * pairs in the form "key=value\n". */
+    FRESDWNT_STATUS_REPLY,
+
+    /* No longer used. */
+    FRESDWNT_ACT_SET_CONFIG__OBSOLETE,
+    FRESDWNT_ACT_GET_CONFIG__OBSOLETE,
+    FRESDWNT_COMMAND_REQUEST__OBSOLETE,
+    FRESDWNT_COMMAND_REPLY__OBSOLETE,
+    FRESDWNT_FLOW_END_CONFIG__OBSOLETE,
+    FRESDWNT_FLOW_END__OBSOLETE,
+    FRESDWNT_MGMT__OBSOLETE,
+
+    /* Use the high 32 bits of the cookie field as the tunnel ID in the flow
+     * match. */
+    FRESDWNT_TUN_ID_FROM_COOKIE,
+
+    /* Controller role support.  The request body is struct fresdwn_role_request.
+     * The reply echos the request. */
+    FRESDWNT_ROLE_REQUEST,
+    FRESDWNT_ROLE_REPLY
+};
+
+struct fresdwn_header {
+    struct ofp_header header;
+    uint32_t vendor;            /* FRESDWN_VENDOR_ID. */
+    uint32_t subtype;           /* One of FRESDWNT_* above. */
+};
+OFP_ASSERT(sizeof(struct fresdwn_header) == 16);
+
+struct fresdwnt_tun_id_cookie {
+    struct ofp_header header;
+    uint32_t vendor;            /* FRESDWN_VENDOR_ID. */
+    uint32_t subtype;           /* FRESDWNT_TUN_ID_FROM_COOKIE */
+    uint8_t set;                /* Nonzero to enable, zero to disable. */
+    uint8_t pad[7];
+};
+OFP_ASSERT(sizeof(struct fresdwnt_tun_id_cookie) == 24);
+
+/* Configures the "role" of the sending controller.  The default role is:
+ *
+ *    - Other (FRESDWN_ROLE_OTHER), which allows the controller access to all
+ *      OpenFlow features.
+ *
+ * The other possible roles are a related pair:
+ *
+ *    - Master (FRESDWN_ROLE_MASTER) is equivalent to Other, except that there may
+ *      be at most one Master controller at a time: when a controller
+ *      configures itself as Master, any existing Master is demoted to the
+ *      Slave role.
+ *
+ *    - Slave (FRESDWN_ROLE_SLAVE) allows the controller read-only access to
+ *      OpenFlow features.  In particular attempts to modify the flow table
+ *      will be rejected with an OFPBRC_EPERM error.
+ *
+ *      Slave controllers also do not receive asynchronous messages
+ *      (OFPT_PACKET_IN, OFPT_FLOW_REMOVED, OFPT_PORT_STATUS).
+ */
+struct fresdwn_role_request {
+    struct fresdwn_header fresdwnh;
+    uint32_t role;              /* One of FRESDWN_ROLE_*. */
+};
+
+enum fresdwn_role {
+    FRESDWN_ROLE_OTHER,              /* Default role, full access. */
+    FRESDWN_ROLE_MASTER,             /* Full access, at most one. */
+    FRESDWN_ROLE_SLAVE               /* Read-only access. */
+};
+
+enum fresdwn_action_subtype {
+    FRESDWNAST_SNAT__OBSOLETE,           /* No longer used. */
+
+    /* Searches the flow table again, using a flow that is slightly modified
+     * from the original lookup:
+     *
+     *    - The 'in_port' member of struct fresdwn_action_resubmit is used as the
+     *      flow's in_port.
+     *
+     *    - If FRESDWNAST_RESUBMIT is preceded by actions that affect the flow
+     *      (e.g. OFPAT_SET_VLAN_VID), then the flow is updated with the new
+     *      values.
+     *
+     * Following the lookup, the original in_port is restored.
+     *
+     * If the modified flow matched in the flow table, then the corresponding
+     * actions are executed.  Afterward, actions following FRESDWNAST_RESUBMIT in
+     * the original set of actions, if any, are executed; any changes made to
+     * the packet (e.g. changes to VLAN) by secondary actions persist when
+     * those actions are executed, although the original in_port is restored.
+     *
+     * FRESDWNAST_RESUBMIT may be used any number of times within a set of actions.
+     *
+     * FRESDWNAST_RESUBMIT may nest to an implementation-defined depth.  Beyond this
+     * implementation-defined depth, further FRESDWNAST_RESUBMIT actions are simply
+     * ignored.  (Open vSwitch 1.0.1 and earlier did not support recursion.)
+     */
+    FRESDWNAST_RESUBMIT,
+
+    /* Set encapsulating tunnel ID. */
+    FRESDWNAST_SET_TUNNEL,
+
+    /* Stops processing further actions, if the packet being processed is an
+     * Ethernet+IPv4 ARP packet for which the source Ethernet address inside
+     * the ARP packet differs from the source Ethernet address in the Ethernet
+     * header.
+     *
+     * This is useful because OpenFlow does not provide a way to match on the
+     * Ethernet addresses inside ARP packets, so there is no other way to drop
+     * spoofed ARPs other than sending every packet up to the controller. */
+    FRESDWNAST_DROP_SPOOFED_ARP
+};
+
+/* Action structure for FRESDWNAST_RESUBMIT. */
+struct fresdwn_action_resubmit {
+    uint16_t type;                  /* OFPAT_VENDOR. */
+    uint16_t len;                   /* Length is 16. */
+    uint32_t vendor;                /* FRESDWN_VENDOR_ID. */
+    uint16_t subtype;               /* FRESDWNAST_RESUBMIT. */
+    uint16_t in_port;               /* New in_port for checking flow table. */
+    uint8_t pad[4];
+};
+OFP_ASSERT(sizeof(struct fresdwn_action_resubmit) == 16);
+
+/* Action structure for FRESDWNAST_SET_TUNNEL. */
+struct fresdwn_action_set_tunnel {
+    uint16_t type;                  /* OFPAT_VENDOR. */
+    uint16_t len;                   /* Length is 16. */
+    uint32_t vendor;                /* FRESDWN_VENDOR_ID. */
+    uint16_t subtype;               /* FRESDWNAST_SET_TUNNEL. */
+    uint8_t pad[2];
+    uint32_t tun_id;                /* Tunnel ID. */
+};
+OFP_ASSERT(sizeof(struct fresdwn_action_set_tunnel) == 16);
+
+/* Header for Nicira-defined actions. */
+struct fresdwn_action_header {
+    uint16_t type;                  /* OFPAT_VENDOR. */
+    uint16_t len;                   /* Length is 16. */
+    uint32_t vendor;                /* FRESDWN_VENDOR_ID. */
+    uint16_t subtype;               /* FRESDWNAST_*. */
+    uint8_t pad[6];
+};
+OFP_ASSERT(sizeof(struct fresdwn_action_header) == 16);
+
+
+
+
+/*
+ *    Restante do Nicira
+ */
+
+
 
 /* Wildcard for tunnel ID. */
 #define NXFW_TUN_ID  (1 << 25)

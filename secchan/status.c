@@ -85,9 +85,21 @@ switch_status_remote_packet_cb(struct relay *r, void *ss_)
         return false;
     }
     request = msg->data;
+    /*
+          Modificado pelo FRESDWN
+
     if (request->header.type != OFPT_EXPERIMENTER
         || request->vendor != htonl(NX_VENDOR_ID)
         || request->subtype != htonl(NXT_STATUS_REQUEST)) {
+        return false;
+    }
+    */
+    if (request->header.type != OFPT_EXPERIMENTER
+        || request->vendor != htonl(NX_VENDOR_ID)
+        || request->subtype != htonl(NXT_STATUS_REQUEST)
+        || request->vendor != htonl(FRESDWN_VENDOR_ID)
+        || request->subtype != htonl(FRESDWNT_STATUS_REQUEST)
+       ) {
         return false;
     }
 

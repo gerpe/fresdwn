@@ -174,3 +174,158 @@ ofl_exp_nicira_msg_to_string(struct ofl_msg_experimenter *msg) {
     fclose(stream);
     return str;
 }
+
+
+/*
+ *
+ *	FRESDWN
+ *
+ */
+
+
+int
+ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_len) {
+    if (msg->experimenter_id == FRESDWN_VENDOR_ID) {
+        struct ofl_exp_fresdwn_msg_header *exp = (struct ofl_exp_fresdwn_msg_header *)msg;
+        switch (exp->type) {
+            case (FRESDWNT_ROLE_REQUEST):
+            case (FRESDWNT_ROLE_REPLY): {
+                struct ofl_exp_fresdwn_msg_role *role = (struct ofl_exp_fresdwn_msg_role *)exp;
+                struct fresdwn_role_request *ofp;
+
+                *buf_len = sizeof(struct fresdwn_role_request);
+                *buf     = (uint8_t *)malloc(*buf_len);
+
+                ofp = (struct fresdwn_role_request *)(*buf);
+                ofp->fresdwnh.vendor =  htonl(exp->header.experimenter_id);
+                ofp->fresdwnh.subtype = htonl(exp->type);
+                ofp->role = htonl(role->role);
+
+                return 0;
+            }
+            default: {
+                OFL_LOG_WARN(LOG_MODULE, "Trying to print unknown FRESDWN Experimenter message.");
+                return -1;
+            }
+        }
+    } else {
+        OFL_LOG_WARN(LOG_MODULE, "Trying to print non-FRESDWN Experimenter message.");
+        return -1;
+    }
+}
+
+ofl_err
+ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experimenter **msg) {
+    struct fresdwn_header *exp;
+
+    if (*len < sizeof(struct fresdwn_header)) {
+        OFL_LOG_WARN(LOG_MODULE, "Received EXPERIMENTER message has invalid length (%zu).", *len);
+        return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
+    }
+
+    exp = (struct fresdwn_header *)oh;
+
+    if (ntohl(exp->vendor) == FRESDWN_VENDOR_ID) {
+
+        switch (ntohl(exp->subtype)) {
+	    //case (FRESDWNT_STATUS_REQUEST): // IDENTIFICADOR 1
+	    case (FRESDWNT_STATUS_REPLY): // IDENTIFICADOR 1
+            case (FRESDWNT_ROLE_REQUEST):
+            case (FRESDWNT_ROLE_REPLY): {
+		/*
+                 * Entra aqui
+                 */
+                struct fresdwn_role_request *src;
+                struct ofl_exp_fresdwn_msg_role *dst;
+
+                if (*len < sizeof(struct fresdwn_role_request)) {
+                    OFL_LOG_WARN(LOG_MODULE, "Received FRESDWNT_ROLE_REPLY message has invalid length (%zu).", *len);
+                    // return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
+                    return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+                }
+
+                *len -= sizeof(struct fresdwn_role_request);
+
+                src = (struct fresdwn_role_request *)exp;
+
+                dst = (struct ofl_exp_fresdwn_msg_role *)malloc(sizeof(struct ofl_exp_fresdwn_msg_role));
+                dst->header.header.experimenter_id = ntohl(exp->vendor);
+                dst->header.type                   = ntohl(exp->subtype);
+                dst->role                          = ntohl(src->role);
+
+                (*msg) = (struct ofl_msg_experimenter *)dst;
+                return 0;
+            }
+            // case (1): {
+                // OFL_LOG_WARN(LOG_MODULE, "Trying to unpack unknown FRESDWN Experimenter message.");
+                // return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
+            // }
+            default: {
+                OFL_LOG_WARN(LOG_MODULE, "Trying to unpack unknown FRESDWN Experimenter message.");
+                //return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+                return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
+            }
+        }
+    } else {
+        OFL_LOG_WARN(LOG_MODULE, "Trying to unpack non-FRESDWN Experimenter message.");
+        return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+        //return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
+    }
+    free(msg);
+    return 0;
+}
+
+int
+ofl_exp_fresdwn_msg_free(struct ofl_msg_experimenter *msg) {
+    if (msg->experimenter_id == FRESDWN_VENDOR_ID) {
+        struct ofl_exp_fresdwn_msg_header *exp = (struct ofl_exp_fresdwn_msg_header *)msg;
+        switch (exp->type) {
+            case (FRESDWNT_ROLE_REQUEST):
+            case (FRESDWNT_ROLE_REPLY): {
+                break;
+            }
+            default: {
+                OFL_LOG_WARN(LOG_MODULE, "Trying to free unknown FRESDWN Experimenter message.");
+            }
+        }
+    } else {
+        OFL_LOG_WARN(LOG_MODULE, "Trying to free non-FRESDWN Experimenter message.");
+    }
+    free(msg);
+    return 0;
+}
+
+char *
+ofl_exp_fresdwn_msg_to_string(struct ofl_msg_experimenter *msg) {
+    char *str;
+    size_t str_size;
+    FILE *stream = open_memstream(&str, &str_size);
+
+    if (msg->experimenter_id == FRESDWN_VENDOR_ID) {
+        struct ofl_exp_fresdwn_msg_header *exp = (struct ofl_exp_fresdwn_msg_header *)msg;
+        switch (exp->type) {
+            case (FRESDWNT_ROLE_REQUEST):
+            case (FRESDWNT_ROLE_REPLY): {
+                struct ofl_exp_fresdwn_msg_role *r = (struct ofl_exp_fresdwn_msg_role *)exp;
+                fprintf(stream, "%s{role=\"%s\"}",
+                              exp->type == FRESDWNT_ROLE_REQUEST ? "rolereq" : "rolerep",
+                              r->role == FRESDWN_ROLE_MASTER ? "master" :
+                              r->role == FRESDWN_ROLE_SLAVE ? "slave"
+                                                       : "other");
+                break;
+            }
+            default: {
+                OFL_LOG_WARN(LOG_MODULE, "Trying to print unknown FRESDWN Experimenter message.");
+                fprintf(stream, "ofexp{type=\"%u\"}", exp->type);
+            }
+        }
+    } else {
+        OFL_LOG_WARN(LOG_MODULE, "Trying to print non-FRESDWN Experimenter message.");
+        fprintf(stream, "exp{exp_id=\"%u\"}", msg->experimenter_id);
+    }
+
+    fclose(stream);
+    return str;
+}
+
+

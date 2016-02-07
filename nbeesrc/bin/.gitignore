@@ -1,0 +1,29 @@
+## Exclude generated binaries
+nbeedump
+nbextractor
+downloadnetpdldb
+fieldextractor
+filtercompiler
+netpdlutils
+netvmcompiler
+packetdecoder
+pdmlfieldextractor
+pdmlreader
+protodbdump
+psmlreader
+sockutilstest
+netvmexec
+
+## Exclude NetPDL database downloaded by downloadnetpdldb
+netpdl.xml
+
+## Excluded files generated at runtime by nbeedump
+*.asm
+*.dot
+*.s
+
+## Exclude .dot graphs converted into .png images
+*.png
+
+## Exclude gdb history file
+.gdb_history

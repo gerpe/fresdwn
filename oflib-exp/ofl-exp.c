@@ -53,8 +53,16 @@ ofl_exp_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_le
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_pack(msg, buf, buf_len);
         }
+	/*            Acrescentada pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
+        }
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
+        }
+        case (FRESDWN_VENDOR_ID): {
+            return ofl_exp_fresdwn_msg_pack(msg, buf, buf_len);
         }
         default: {
             OFL_LOG_WARN(LOG_MODULE, "Trying to pack unknown EXPERIMENTER message (%u).", msg->experimenter_id);
@@ -78,8 +86,16 @@ ofl_exp_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experiment
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_unpack(oh, len, msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_unpack(oh, len, msg);
+        }
+	 */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_unpack(oh, len, msg);
+        }
+        case (FRESDWN_VENDOR_ID): {
+            return ofl_exp_fresdwn_msg_unpack(oh, len, msg);
         }
         default: {
             OFL_LOG_WARN(LOG_MODULE, "Trying to unpack unknown EXPERIMENTER message (%u).", htonl(exp->experimenter));
@@ -94,8 +110,16 @@ ofl_exp_msg_free(struct ofl_msg_experimenter *msg) {
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_free(msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_free(msg);
+        }
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_free(msg);
+        }
+        case (FRESDWN_VENDOR_ID): {
+            return ofl_exp_fresdwn_msg_free(msg);
         }
         default: {
             OFL_LOG_WARN(LOG_MODULE, "Trying to free unknown EXPERIMENTER message (%u).", msg->experimenter_id);
@@ -111,8 +135,16 @@ ofl_exp_msg_to_string(struct ofl_msg_experimenter *msg) {
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_to_string(msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_to_string(msg);
+        }
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_to_string(msg);
+        }
+        case (FRESDWN_VENDOR_ID): {
+            return ofl_exp_fresdwn_msg_to_string(msg);
         }
         default: {
             char *str;

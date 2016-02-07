@@ -154,12 +154,14 @@ ofl_exp_openflow_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_e
             }
             default: {
                 OFL_LOG_WARN(LOG_MODULE, "Trying to unpack unknown Openflow Experimenter message.");
-                return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+           //     return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+                return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
             }
         }
     } else {
         OFL_LOG_WARN(LOG_MODULE, "Trying to unpack non-Openflow Experimenter message.");
-        return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+        // return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+        return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
     }
     free(msg);
     return 0;
