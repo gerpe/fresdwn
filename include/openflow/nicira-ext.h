@@ -199,20 +199,32 @@ enum fresdwn_type {
      * pairs in the form "key=value\n". */
     FRESDWNT_STATUS_REPLY,
 
-    /* No longer used. */
-    FRESDWNT_ACT_SET_CONFIG__OBSOLETE,
-    FRESDWNT_ACT_GET_CONFIG__OBSOLETE,
-    FRESDWNT_COMMAND_REQUEST__OBSOLETE,
-    FRESDWNT_COMMAND_REPLY__OBSOLETE,
-    FRESDWNT_FLOW_END_CONFIG__OBSOLETE,
-    FRESDWNT_FLOW_END__OBSOLETE,
-    FRESDWNT_MGMT__OBSOLETE,
+    /* Generic GET/SET Wireless configuration */
+    FRESDWNT_ACT_SET_CONFIG,
+    FRESDWNT_ACT_GET_CONFIG,
+    FRESDWNT_COMMAND_REQUEST,
+    FRESDWNT_COMMAND_REPLY,
+    FRESDWNT_FLOW_END_CONFIG,
+    FRESDWNT_FLOW_END,
+    FRESDWNT_MGMT,
 
-    /* Use the high 32 bits of the cookie field as the tunnel ID in the flow
-     * match. */
-    FRESDWNT_TUN_ID_FROM_COOKIE,
+    /* GET/SET Channel configuration */
+    FRESDWNT_ACT_SET_CHANNEL_CONFIG,
+    FRESDWNT_ACT_GET_CHANNEL_CONFIG,
 
-    /* Controller role support.  The request body is struct fresdwn_role_request.
+    /* GET PHYSICAL information */
+    FRESDWNT_ACT_GET_AP_CONFIG,
+    FRESDWNT_ACT_GET_AP_IN_RANGE_INFO,
+    FRESDWNT_ACT_GET_BEACON_INFO,
+    FRESDWNT_ACT_GET_NOISE_INFO,
+    FRESDWNT_ACT_GET_POSITION_INFO,
+    
+    /* GET/SET SSID configuration */
+    FRESDWNT_ACT_SET_SSID_CONFIG,
+    FRESDWNT_ACT_GET_SSID_CONFIG,
+
+
+    /* Controller role support. The request body is struct fresdwn_role_request.
      * The reply echos the request. */
     FRESDWNT_ROLE_REQUEST,
     FRESDWNT_ROLE_REPLY
