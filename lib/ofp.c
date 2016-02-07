@@ -705,8 +705,9 @@ check_fresdwn_action(const union ofp_action *a, unsigned int len)
     nah = (const struct fresdwn_action_header *) a;
 
     switch (ntohs(nah->subtype)) {
-    case NXAST_RESUBMIT:
-    case NXAST_SET_TUNNEL:
+    case FRESDWN_ACTION_SEND:
+    case FRESDWN_ACTION_RECEIVE:
+    case FRESDWN_ACTION_PROCESSING:
         return check_action_exact_len(a, len, 16);
     default:
         return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
