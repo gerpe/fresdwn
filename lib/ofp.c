@@ -648,6 +648,7 @@ check_setqueue_action(const union ofp_action *a, unsigned int len)
     /*oaq = (const struct ofp_action_set_queue *) a;*/
     return 0;
 }
+/* Acrescentado pelo FRESDWN
 
 static int
 check_nicira_action(const union ofp_action *a, unsigned int len)
@@ -668,6 +669,54 @@ check_nicira_action(const union ofp_action *a, unsigned int len)
         return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
     }
 }
+*/
+
+
+static int
+check_nicira_action(const union ofp_action *a, unsigned int len)
+{
+    const struct nx_action_header *nah;
+
+    if (len < 16) {
+        VLOG_DBG(LOG_MODULE, "Nicira vendor action only %u bytes", len);
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_LEN);;
+    }
+    nah = (const struct nx_action_header *) a;
+
+    switch (ntohs(nah->subtype)) {
+    case NXAST_RESUBMIT:
+    case NXAST_SET_TUNNEL:
+        return check_action_exact_len(a, len, 16);
+    default:
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
+        //return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXP_TYPE);
+    }
+}
+
+
+static int
+check_fresdwn_action(const union ofp_action *a, unsigned int len)
+{
+    const struct fresdwn_action_header *nah;
+
+    if (len < 16) {
+        VLOG_DBG(LOG_MODULE, "FRESDWN vendor action only %u bytes", len);
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_LEN);;
+    }
+    nah = (const struct fresdwn_action_header *) a;
+
+    switch (ntohs(nah->subtype)) {
+    case FRESDWN_ACTION_SEND:
+    case FRESDWN_ACTION_RECEIVE:
+    case FRESDWN_ACTION_PROCESSING:
+        return check_action_exact_len(a, len, 16);
+    default:
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
+        // return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXP_TYPE);
+    }
+}
+
+
 
 static int
 check_fresdwn_action(const union ofp_action *a, unsigned int len)
@@ -712,11 +761,19 @@ check_action(const union ofp_action *a, unsigned int len, int max_ports,
 
 
     case OFPAT_EXPERIMENTER:
+<<<<<<< HEAD
         /* 
            return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
                 ? check_nicira_action(a, len)
                 : ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
          */
+=======
+        /* modificado pelo FRESDWN  (segue em comentario o original)   aqui
+	return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
+                ? check_nicira_action(a, len)
+                : ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
+        */
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
 	if ( a->experimenter.experimenter == htonl (NX_VENDOR_ID) ) {
 		return ( check_nicira_action(a,len) );
 	}
@@ -727,7 +784,14 @@ check_action(const union ofp_action *a, unsigned int len, int max_ports,
 		}
 		return ( ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
 	}
+<<<<<<< HEAD
 
+=======
+     /*   return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
+                ? check_nicira_action(a, len)
+                : check_fresdwn_action(a,len));
+      */
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
     case OFPAT_SET_QUEUE:
         return check_setqueue_action(a, len);
 

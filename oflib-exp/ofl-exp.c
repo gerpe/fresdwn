@@ -53,9 +53,17 @@ ofl_exp_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_le
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_pack(msg, buf, buf_len);
         }
+	/*            Acrescentada pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
         }
+<<<<<<< HEAD
+=======
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
+        }
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
         case (FRESDWN_VENDOR_ID): {
             return ofl_exp_fresdwn_msg_pack(msg, buf, buf_len);
         }
@@ -81,9 +89,17 @@ ofl_exp_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experiment
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_unpack(oh, len, msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_unpack(oh, len, msg);
         }
+<<<<<<< HEAD
+=======
+	 */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_unpack(oh, len, msg);
+        }
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
         case (FRESDWN_VENDOR_ID): {
             return ofl_exp_fresdwn_msg_unpack(oh, len, msg);
         }
@@ -100,9 +116,17 @@ ofl_exp_msg_free(struct ofl_msg_experimenter *msg) {
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_free(msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_free(msg);
         }
+<<<<<<< HEAD
+=======
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_free(msg);
+        }
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
         case (FRESDWN_VENDOR_ID): {
             return ofl_exp_fresdwn_msg_free(msg);
         }
@@ -120,9 +144,17 @@ ofl_exp_msg_to_string(struct ofl_msg_experimenter *msg) {
         case (OPENFLOW_VENDOR_ID): {
             return ofl_exp_openflow_msg_to_string(msg);
         }
+	/* Acrescentado pelo FRESDWN
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_to_string(msg);
         }
+<<<<<<< HEAD
+=======
+         */
+        case (NX_VENDOR_ID): {
+            return ofl_exp_nicira_msg_to_string(msg);
+        }
+>>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
         case (FRESDWN_VENDOR_ID): {
             return ofl_exp_fresdwn_msg_to_string(msg);
         }
