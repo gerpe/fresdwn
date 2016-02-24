@@ -670,6 +670,30 @@ check_nicira_action(const union ofp_action *a, unsigned int len)
 }
 
 static int
+check_fresdwn_action(const union ofp_action *a, unsigned int len)
+{
+    const struct fresdwn_action_header *nah;
+
+    if (len < 16) {
+        VLOG_DBG(LOG_MODULE, "FRESDWN vendor action only %u bytes", len);
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_LEN);;
+    }
+    nah = (const struct fresdwn_action_header *) a;
+
+    switch (ntohs(nah->subtype)) {
+    case FRESDWN_ACTION_SEND:
+    case FRESDWN_ACTION_RECEIVE:
+    case FRESDWN_ACTION_PROCESSING:
+        return check_action_exact_len(a, len, 16);
+    default:
+        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
+        // return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXP_TYPE);
+    }
+}
+
+
+
+static int
 check_action(const union ofp_action *a, unsigned int len, int max_ports,
              bool is_packet_out)
 {
@@ -688,9 +712,21 @@ check_action(const union ofp_action *a, unsigned int len, int max_ports,
 
 
     case OFPAT_EXPERIMENTER:
-        return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
+        /* 
+           return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
                 ? check_nicira_action(a, len)
                 : ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
+         */
+	if ( a->experimenter.experimenter == htonl (NX_VENDOR_ID) ) {
+		return ( check_nicira_action(a,len) );
+	}
+	else
+	{
+		if ( a->experimenter.experimenter == htonl (FRESDWN_VENDOR_ID)){
+			return ( check_fresdwn_action(a,len) );
+		}
+		return ( ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
+	}
 
     case OFPAT_SET_QUEUE:
         return check_setqueue_action(a, len);

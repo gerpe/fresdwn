@@ -74,6 +74,26 @@ dp_exp_message(struct datapath *dp,
                                const struct sender *sender) {
 
     switch (msg->experimenter_id) {
+        /* Acrescentado pelo FRESDWN */
+        case (FRESDWN_VENDOR_ID): {
+            struct ofl_exp_openflow_msg_header *exp = (struct ofl_exp_openflow_msg_header *)msg;
+
+            switch(exp->type) {
+                case (OFP_EXT_QUEUE_MODIFY): {
+                    return dp_ports_handle_queue_modify(dp, (struct ofl_exp_openflow_msg_queue *)msg, sender);
+                }
+                case (OFP_EXT_QUEUE_DELETE): {
+                    return dp_ports_handle_queue_delete(dp, (struct ofl_exp_openflow_msg_queue *)msg, sender);
+                }
+                case (OFP_EXT_SET_DESC): {
+                    return dp_handle_set_desc(dp, (struct ofl_exp_openflow_msg_set_dp_desc *)msg, sender);
+                }
+                default: {
+                	VLOG_WARN_RL(LOG_MODULE, &rl, "Trying to handle unknown experimenter type (%u).", exp->type);
+                    return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
+                }
+            }
+        }
         case (OPENFLOW_VENDOR_ID): {
             struct ofl_exp_openflow_msg_header *exp = (struct ofl_exp_openflow_msg_header *)msg;
 
