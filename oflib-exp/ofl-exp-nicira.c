@@ -188,11 +188,8 @@ ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t
     if (msg->experimenter_id == FRESDWN_VENDOR_ID) {
         struct ofl_exp_fresdwn_msg_header *exp = (struct ofl_exp_fresdwn_msg_header *)msg;
         switch (exp->type) {
-<<<<<<< HEAD
 	    case (FRESDWNT_FEATURE_REQUEST): 
 	    case (FRESDWNT_FEATURE_REPLY): // IDENTIFICADOR 1
-=======
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
             case (FRESDWNT_ROLE_REQUEST):
             case (FRESDWNT_ROLE_REPLY): {
                 struct ofl_exp_fresdwn_msg_role *role = (struct ofl_exp_fresdwn_msg_role *)exp;
@@ -221,14 +218,11 @@ ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t
 
 ofl_err
 ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experimenter **msg) {
-<<<<<<< HEAD
 /*
           Criadas para tentar enviar a mensagem experimenter
     uint8_t **buf = NULL;
     size_t *buf_len = NULL;
 */
-=======
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
     struct fresdwn_header *exp;
 
     if (*len < sizeof(struct fresdwn_header)) {
@@ -241,13 +235,10 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
     if (ntohl(exp->vendor) == FRESDWN_VENDOR_ID) {
 
         switch (ntohl(exp->subtype)) {
-<<<<<<< HEAD
 	    case (FRESDWNT_FEATURE_REQUEST): 
 	    case (FRESDWNT_FEATURE_REPLY): // IDENTIFICADOR 1
-=======
 	    //case (FRESDWNT_STATUS_REQUEST): // IDENTIFICADOR 1
 	    case (FRESDWNT_STATUS_REPLY): // IDENTIFICADOR 1
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
             case (FRESDWNT_ROLE_REQUEST):
             case (FRESDWNT_ROLE_REPLY): {
 		/*
@@ -259,7 +250,6 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
                 if (*len < sizeof(struct fresdwn_role_request)) {
                     OFL_LOG_WARN(LOG_MODULE, "Received FRESDWNT_ROLE_REPLY message has invalid length (%zu).", *len);
                     // return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
-<<<<<<< HEAD
 	            // Testando a volta da mensagem ---- AQUI
                      return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
 		    /*
@@ -267,9 +257,7 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
 
                         return ofl_exp_fresdwn_msg_pack(*msg, buf, buf_len); 
                      */
-=======
                     return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
                 }
 
                 *len -= sizeof(struct fresdwn_role_request);

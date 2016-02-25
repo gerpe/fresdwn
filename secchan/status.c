@@ -98,11 +98,8 @@ switch_status_remote_packet_cb(struct relay *r, void *ss_)
         || request->vendor != htonl(NX_VENDOR_ID)
         || request->subtype != htonl(NXT_STATUS_REQUEST)
         || request->vendor != htonl(FRESDWN_VENDOR_ID)
-<<<<<<< HEAD
         || request->subtype != htonl(FRESDWNT_FEATURE_REQUEST)
-=======
         || request->subtype != htonl(FRESDWNT_STATUS_REQUEST)
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
        ) {
         return false;
     }
@@ -112,11 +109,8 @@ switch_status_remote_packet_cb(struct relay *r, void *ss_)
      */
     if (request->header.type == OFPT_EXPERIMENTER
         && request->vendor == htonl(FRESDWN_VENDOR_ID)
-<<<<<<< HEAD
         && request->subtype == htonl(FRESDWNT_FEATURE_REQUEST)
-=======
         && request->subtype == htonl(FRESDWNT_STATUS_REQUEST)
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
        ) {
 	    sr.request.string = (void *) (request + 1);
 	    sr.request.length = msg->size - sizeof *request;
@@ -132,11 +126,8 @@ switch_status_remote_packet_cb(struct relay *r, void *ss_)
 	    reply = make_openflow_xid(sizeof *reply + sr.output.length,
 				    OFPT_EXPERIMENTER, request->header.xid, &b);
 	    reply->vendor = htonl(FRESDWN_VENDOR_ID);
-<<<<<<< HEAD
 	    reply->subtype = htonl(FRESDWNT_FEATURE_REPLY);
-=======
 	    reply->subtype = htonl(FRESDWNT_STATUS_REPLY);
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
 	    memcpy(reply + 1, sr.output.string, sr.output.length);
 	    retval = rconn_send(rc, b, NULL);
 	    if (retval && retval != EAGAIN) {

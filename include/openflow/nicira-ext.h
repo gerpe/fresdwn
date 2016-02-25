@@ -188,7 +188,6 @@ OFP_ASSERT(sizeof(struct nx_action_header) == 16);
  */
 
 
-<<<<<<< HEAD
 enum fresdwn_type_wireless_tecnology {
     FRESDWNT_802_11_a,
     FRESDWNT_802_11_b,
@@ -255,27 +254,21 @@ enum fresdwn_type_of_frequency_atribute {
     FRESDWNT_2100Mhz,
 };
 	
-=======
-
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
 enum fresdwn_type {
     /* Switch status request.  The request body is an ASCII string that
      * specifies a prefix of the key names to include in the output; if it is
      * the null string, then all key-value pairs are included. */
-<<<<<<< HEAD
     // FRESDWNT_STATUS_REQUEST,
     FRESDWNT_FEATURE_REQUEST, // Solicita as caracteristicas do dispositivo
 
     /* Switch status reply.  The reply body is an ASCII string of key-value
      * pairs in the form "key=value\n". */
     FRESDWNT_FEATURE_REPLY, // Informa as caracteristicas para a controladora
-=======
     FRESDWNT_STATUS_REQUEST,
 
     /* Switch status reply.  The reply body is an ASCII string of key-value
      * pairs in the form "key=value\n". */
     FRESDWNT_STATUS_REPLY,
->>>>>>> 7747f33c0ade536bc6c5a000b55337fef203f29e
 
     /* Generic GET/SET Wireless configuration */
     FRESDWNT_ACT_SET_CONFIG,
