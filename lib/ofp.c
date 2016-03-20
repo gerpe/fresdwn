@@ -717,10 +717,6 @@ check_fresdwn_action(const union ofp_action *a, unsigned int len)
 }
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8ce45c3cba0de1873eee457c89660844dc60520c
 static int
 check_action(const union ofp_action *a, unsigned int len, int max_ports,
              bool is_packet_out)
@@ -760,10 +756,6 @@ check_action(const union ofp_action *a, unsigned int len, int max_ports,
 		}
 		return ( ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 8ce45c3cba0de1873eee457c89660844dc60520c
      /*   return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
                 ? check_nicira_action(a, len)
                 : check_fresdwn_action(a,len));

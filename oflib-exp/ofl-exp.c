@@ -57,8 +57,6 @@ ofl_exp_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_le
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
         }
-<<<<<<< HEAD
-=======
          */
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_pack(msg, buf, buf_len);
@@ -92,8 +90,6 @@ ofl_exp_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experiment
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_unpack(oh, len, msg);
         }
-<<<<<<< HEAD
-=======
 	 */
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_unpack(oh, len, msg);
@@ -118,8 +114,6 @@ ofl_exp_msg_free(struct ofl_msg_experimenter *msg) {
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_free(msg);
         }
-<<<<<<< HEAD
-=======
          */
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_free(msg);
@@ -145,8 +139,6 @@ ofl_exp_msg_to_string(struct ofl_msg_experimenter *msg) {
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_to_string(msg);
         }
-<<<<<<< HEAD
-=======
          */
         case (NX_VENDOR_ID): {
             return ofl_exp_nicira_msg_to_string(msg);
