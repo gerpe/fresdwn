@@ -106,6 +106,7 @@ lib_libopenflow_a_LIBADD = oflib/ofl-actions.o \
                            oflib/oxm-match.o \
                            oflib/ofl-print.o \
                            oflib-exp/ofl-exp.o \
+                           oflib-exp/ofl-exp-fresdwn.o \
                            oflib-exp/ofl-exp-nicira.o \
                            oflib-exp/ofl-exp-openflow.o
 

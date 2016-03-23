@@ -50,7 +50,6 @@ struct ofl_exp_nicira_msg_role {
 };
 
 
-
 int
 ofl_exp_nicira_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_len);
 
@@ -63,41 +62,6 @@ ofl_exp_nicira_msg_free(struct ofl_msg_experimenter *msg);
 char *
 ofl_exp_nicira_msg_to_string(struct ofl_msg_experimenter *msg);
 
-
-
-
-/*
- *
- * 	FRESDWN
- *
- */
-
-
-struct ofl_exp_fresdwn_msg_header {
-    struct ofl_msg_experimenter   header; /* FRESDWN_VENDOR_ID */
-
-    uint32_t   type;
-};
-
-struct ofl_exp_fresdwn_msg_role {
-    struct ofl_exp_fresdwn_msg_header   header; /* FRESDWNT_ROLE_REQUEST|REPLY */
-
-    uint32_t                  role;
-};
-
-
-
-int
-ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t *buf_len);
-
-ofl_err
-ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_experimenter **msg);
-
-int
-ofl_exp_fresdwn_msg_free(struct ofl_msg_experimenter *msg);
-
-char *
-ofl_exp_fresdwn_msg_to_string(struct ofl_msg_experimenter *msg);
 
 
 #endif /* OFL_EXP_NICIRA_H */
