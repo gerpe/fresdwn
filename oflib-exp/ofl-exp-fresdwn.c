@@ -61,21 +61,32 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
     size_t *buf_len = NULL;
 */
     struct fresdwn_header *exp;
+/*
+ * tentando ignorar o tamanho errado
+
     if (*len < sizeof(struct fresdwn_header)) {
         OFL_LOG_WARN(LOG_MODULE, "Received EXPERIMENTER message has invalid length (%zu).", *len);
         return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
     }
+
+* tentando ignorar o tamanho errado
+*/
     exp = (struct fresdwn_header *)oh;
     switch (ntohl(exp->fdwnh.exp_type)) {
         case (FRESDWNT_DUMMY):{
             struct fresdwn_dummy *src;
             struct ofl_exp_fresdwn_msg_dummy *dst;
 
+/*
+ * tentando ignorar o tamanho errado
+
             if (*len < sizeof(struct fresdwn_dummy)) {
                 OFL_LOG_WARN(LOG_MODULE, "Received DUMMY message has invalid length (%zu).", *len);
                 return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
             }
 
+* tentando ignorar o tamanho errado
+*/
             *len -= sizeof(struct fresdwn_dummy);
             src = (struct fresdwn_dummy *)exp;
             dst = (struct ofl_exp_fresdwn_msg_dummy *)malloc(sizeof(struct ofl_exp_fresdwn_msg_dummy));

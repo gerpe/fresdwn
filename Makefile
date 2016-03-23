@@ -157,7 +157,8 @@ lib_libopenflow_a_DEPENDENCIES = oflib/ofl-actions.o \
 	oflib/ofl-structs-match.o oflib/ofl-structs-pack.o \
 	oflib/ofl-structs-print.o oflib/ofl-structs-unpack.o \
 	oflib/oxm-match.o oflib/ofl-print.o oflib-exp/ofl-exp.o \
-	oflib-exp/ofl-exp-nicira.o oflib-exp/ofl-exp-openflow.o
+	oflib-exp/ofl-exp-fresdwn.o oflib-exp/ofl-exp-nicira.o \
+	oflib-exp/ofl-exp-openflow.o
 am__lib_libopenflow_a_SOURCES_DIST = lib/backtrace.c lib/backtrace.h \
 	lib/command-line.c lib/command-line.h lib/compiler.h \
 	lib/csum.c lib/csum.h lib/daemon.c lib/daemon.h \
@@ -218,6 +219,7 @@ nbee_link_libnbee_link_a_OBJECTS =  \
 oflib_exp_liboflib_exp_a_AR = $(AR) $(ARFLAGS)
 oflib_exp_liboflib_exp_a_LIBADD =
 am_oflib_exp_liboflib_exp_a_OBJECTS = oflib-exp/ofl-exp.$(OBJEXT) \
+	oflib-exp/ofl-exp-fresdwn.$(OBJEXT) \
 	oflib-exp/ofl-exp-nicira.$(OBJEXT) \
 	oflib-exp/ofl-exp-openflow.$(OBJEXT)
 oflib_exp_liboflib_exp_a_OBJECTS =  \
@@ -245,7 +247,8 @@ am__udatapath_libudatapath_a_SOURCES_DIST = udatapath/action_set.c \
 	udatapath/dp_actions.c udatapath/dp_actions.h \
 	udatapath/dp_buffers.c udatapath/dp_buffers.h \
 	udatapath/dp_control.c udatapath/dp_control.h \
-	udatapath/dp_exp.c udatapath/dp_exp.h udatapath/flow_table.c \
+	udatapath/dp_exp.c udatapath/dp_exp.h udatapath/dp_fresdwn.c \
+	udatapath/dp_fresdwn.h udatapath/flow_table.c \
 	udatapath/flow_table.h udatapath/flow_entry.c \
 	udatapath/flow_entry.h udatapath/group_table.c \
 	udatapath/group_table.h udatapath/group_entry.c \
@@ -261,6 +264,7 @@ am__udatapath_libudatapath_a_SOURCES_DIST = udatapath/action_set.c \
 #	udatapath/udatapath_libudatapath_a-dp_buffers.$(OBJEXT) \
 #	udatapath/udatapath_libudatapath_a-dp_control.$(OBJEXT) \
 #	udatapath/udatapath_libudatapath_a-dp_exp.$(OBJEXT) \
+#	udatapath/udatapath_libudatapath_a-dp_fresdwn.$(OBJEXT) \
 #	udatapath/udatapath_libudatapath_a-flow_table.$(OBJEXT) \
 #	udatapath/udatapath_libudatapath_a-flow_entry.$(OBJEXT) \
 #	udatapath/udatapath_libudatapath_a-group_table.$(OBJEXT) \
@@ -294,6 +298,7 @@ am_udatapath_ofdatapath_OBJECTS =  \
 	udatapath/udatapath_ofdatapath-dp_buffers.$(OBJEXT) \
 	udatapath/udatapath_ofdatapath-dp_control.$(OBJEXT) \
 	udatapath/udatapath_ofdatapath-dp_exp.$(OBJEXT) \
+	udatapath/udatapath_ofdatapath-dp_fresdwn.$(OBJEXT) \
 	udatapath/udatapath_ofdatapath-dp_ports.$(OBJEXT) \
 	udatapath/udatapath_ofdatapath-flow_table.$(OBJEXT) \
 	udatapath/udatapath_ofdatapath-flow_entry.$(OBJEXT) \
@@ -817,13 +822,14 @@ EXTRA_DIST = README.hwtables soexpand.pl regress lib/dh1024.pem \
 	utilities/ofp-discover.8.in utilities/ofp-kill.8.in \
 	utilities/ofp-pki-cgi.in utilities/ofp-pki.8.in \
 	utilities/ofp-pki.in utilities/vlogconf.8.in \
-	udatapath/ofdatapath.8.in debian/changelog \
+	udatapath/ofdatapath.8.in debian/automake.mk debian/changelog \
 	debian/commands/reconfigure debian/commands/update \
-	debian/compat debian/control.in debian/control.modules.in \
-	debian/copyright debian/corekeeper.cron.daily \
-	debian/corekeeper.init debian/dirs debian/ofp-switch-setup \
-	debian/ofp-switch-setup.8 debian/openflow-common.dirs \
-	debian/openflow-common.install debian/openflow-common.manpages \
+	debian/compat debian/control debian/control.in \
+	debian/control.modules.in debian/copyright \
+	debian/corekeeper.cron.daily debian/corekeeper.init \
+	debian/dirs debian/ofp-switch-setup debian/ofp-switch-setup.8 \
+	debian/openflow-common.dirs debian/openflow-common.install \
+	debian/openflow-common.manpages \
 	debian/openflow-controller.README.Debian \
 	debian/openflow-controller.default \
 	debian/openflow-controller.dirs \
@@ -865,7 +871,8 @@ man_MANS = secchan/ofprotocol.8 utilities/dpctl.8 \
 	utilities/ofp-pki.8 utilities/vlogconf.8 \
 	udatapath/ofdatapath.8
 noinst_HEADERS = include/openflow/nicira-ext.h \
-	include/openflow/private-ext.h include/openflow/openflow.h \
+	include/openflow/fresdwn-ext.h include/openflow/private-ext.h \
+	include/openflow/openflow.h \
 	include/openflow/openflow-netlink.h
 
 # Process this file with automake to produce Makefile.in
@@ -914,6 +921,7 @@ lib_libopenflow_a_LIBADD = oflib/ofl-actions.o \
                            oflib/oxm-match.o \
                            oflib/ofl-print.o \
                            oflib-exp/ofl-exp.o \
+                           oflib-exp/ofl-exp-fresdwn.o \
                            oflib-exp/ofl-exp-nicira.o \
                            oflib-exp/ofl-exp-openflow.o
 
@@ -955,6 +963,8 @@ oflib_liboflib_a_SOURCES = \
 oflib_exp_liboflib_exp_a_SOURCES = \
 	oflib-exp/ofl-exp.c \
 	oflib-exp/ofl-exp.h \
+    oflib-exp/ofl-exp-fresdwn.c \
+    oflib-exp/ofl-exp-fresdwn.h \
 	oflib-exp/ofl-exp-nicira.c \
 	oflib-exp/ofl-exp-nicira.h \
 	oflib-exp/ofl-exp-openflow.c \
@@ -1008,6 +1018,8 @@ udatapath_ofdatapath_SOURCES = \
 	udatapath/dp_control.h \
 	udatapath/dp_exp.c \
 	udatapath/dp_exp.h \
+	udatapath/dp_fresdwn.c \
+	udatapath/dp_fresdwn.h \
 	udatapath/dp_ports.c \
 	udatapath/dp_ports.h \
 	udatapath/flow_table.c \
@@ -1050,6 +1062,8 @@ nodist_EXTRA_udatapath_ofdatapath_SOURCES = dummy.cxx
 #	udatapath/dp_control.h \
 #	udatapath/dp_exp.c \
 #	udatapath/dp_exp.h \
+#	udatapath/dp_fresdwn.c \
+#	udatapath/dp_fresdwn.h \
 #	udatapath/flow_table.c \
 #	udatapath/flow_table.h \
 #	udatapath/flow_entry.c \
@@ -1233,6 +1247,8 @@ oflib-exp/$(DEPDIR)/$(am__dirstamp):
 	@: > oflib-exp/$(DEPDIR)/$(am__dirstamp)
 oflib-exp/ofl-exp.$(OBJEXT): oflib-exp/$(am__dirstamp) \
 	oflib-exp/$(DEPDIR)/$(am__dirstamp)
+oflib-exp/ofl-exp-fresdwn.$(OBJEXT): oflib-exp/$(am__dirstamp) \
+	oflib-exp/$(DEPDIR)/$(am__dirstamp)
 oflib-exp/ofl-exp-nicira.$(OBJEXT): oflib-exp/$(am__dirstamp) \
 	oflib-exp/$(DEPDIR)/$(am__dirstamp)
 oflib-exp/ofl-exp-openflow.$(OBJEXT): oflib-exp/$(am__dirstamp) \
@@ -1302,6 +1318,8 @@ udatapath/udatapath_libudatapath_a-dp_buffers.$(OBJEXT):  \
 udatapath/udatapath_libudatapath_a-dp_control.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
 udatapath/udatapath_libudatapath_a-dp_exp.$(OBJEXT):  \
+	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
+udatapath/udatapath_libudatapath_a-dp_fresdwn.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
 udatapath/udatapath_libudatapath_a-flow_table.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
@@ -1410,6 +1428,8 @@ udatapath/udatapath_ofdatapath-dp_buffers.$(OBJEXT):  \
 udatapath/udatapath_ofdatapath-dp_control.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
 udatapath/udatapath_ofdatapath-dp_exp.$(OBJEXT):  \
+	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
+udatapath/udatapath_ofdatapath-dp_fresdwn.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
 udatapath/udatapath_ofdatapath-dp_ports.$(OBJEXT):  \
 	udatapath/$(am__dirstamp) udatapath/$(DEPDIR)/$(am__dirstamp)
@@ -1676,6 +1696,7 @@ include lib/$(DEPDIR)/vconn.Po
 include lib/$(DEPDIR)/vlog-socket.Po
 include lib/$(DEPDIR)/vlog.Po
 include nbee_link/$(DEPDIR)/nbee_link.Po
+include oflib-exp/$(DEPDIR)/ofl-exp-fresdwn.Po
 include oflib-exp/$(DEPDIR)/ofl-exp-nicira.Po
 include oflib-exp/$(DEPDIR)/ofl-exp-openflow.Po
 include oflib-exp/$(DEPDIR)/ofl-exp.Po
@@ -1709,6 +1730,7 @@ include udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_actions.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_buffers.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_control.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_exp.Po
+include udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-flow_entry.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-flow_table.Po
 include udatapath/$(DEPDIR)/udatapath_libudatapath_a-group_entry.Po
@@ -1725,6 +1747,7 @@ include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_actions.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_buffers.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_control.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_exp.Po
+include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_ports.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-flow_entry.Po
 include udatapath/$(DEPDIR)/udatapath_ofdatapath-flow_table.Po
@@ -1856,6 +1879,20 @@ udatapath/udatapath_libudatapath_a-dp_exp.obj: udatapath/dp_exp.c
 #	$(AM_V_CC)source='udatapath/dp_exp.c' object='udatapath/udatapath_libudatapath_a-dp_exp.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_libudatapath_a-dp_exp.obj `if test -f 'udatapath/dp_exp.c'; then $(CYGPATH_W) 'udatapath/dp_exp.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_exp.c'; fi`
+
+udatapath/udatapath_libudatapath_a-dp_fresdwn.o: udatapath/dp_fresdwn.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_libudatapath_a-dp_fresdwn.o -MD -MP -MF udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Tpo -c -o udatapath/udatapath_libudatapath_a-dp_fresdwn.o `test -f 'udatapath/dp_fresdwn.c' || echo '$(srcdir)/'`udatapath/dp_fresdwn.c
+	$(AM_V_at)$(am__mv) udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Tpo udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Po
+#	$(AM_V_CC)source='udatapath/dp_fresdwn.c' object='udatapath/udatapath_libudatapath_a-dp_fresdwn.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_libudatapath_a-dp_fresdwn.o `test -f 'udatapath/dp_fresdwn.c' || echo '$(srcdir)/'`udatapath/dp_fresdwn.c
+
+udatapath/udatapath_libudatapath_a-dp_fresdwn.obj: udatapath/dp_fresdwn.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_libudatapath_a-dp_fresdwn.obj -MD -MP -MF udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Tpo -c -o udatapath/udatapath_libudatapath_a-dp_fresdwn.obj `if test -f 'udatapath/dp_fresdwn.c'; then $(CYGPATH_W) 'udatapath/dp_fresdwn.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_fresdwn.c'; fi`
+	$(AM_V_at)$(am__mv) udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Tpo udatapath/$(DEPDIR)/udatapath_libudatapath_a-dp_fresdwn.Po
+#	$(AM_V_CC)source='udatapath/dp_fresdwn.c' object='udatapath/udatapath_libudatapath_a-dp_fresdwn.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_libudatapath_a-dp_fresdwn.obj `if test -f 'udatapath/dp_fresdwn.c'; then $(CYGPATH_W) 'udatapath/dp_fresdwn.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_fresdwn.c'; fi`
 
 udatapath/udatapath_libudatapath_a-flow_table.o: udatapath/flow_table.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_libudatapath_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_libudatapath_a-flow_table.o -MD -MP -MF udatapath/$(DEPDIR)/udatapath_libudatapath_a-flow_table.Tpo -c -o udatapath/udatapath_libudatapath_a-flow_table.o `test -f 'udatapath/flow_table.c' || echo '$(srcdir)/'`udatapath/flow_table.c
@@ -2080,6 +2117,20 @@ udatapath/udatapath_ofdatapath-dp_exp.obj: udatapath/dp_exp.c
 #	$(AM_V_CC)source='udatapath/dp_exp.c' object='udatapath/udatapath_ofdatapath-dp_exp.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_ofdatapath-dp_exp.obj `if test -f 'udatapath/dp_exp.c'; then $(CYGPATH_W) 'udatapath/dp_exp.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_exp.c'; fi`
+
+udatapath/udatapath_ofdatapath-dp_fresdwn.o: udatapath/dp_fresdwn.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_ofdatapath-dp_fresdwn.o -MD -MP -MF udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Tpo -c -o udatapath/udatapath_ofdatapath-dp_fresdwn.o `test -f 'udatapath/dp_fresdwn.c' || echo '$(srcdir)/'`udatapath/dp_fresdwn.c
+	$(AM_V_at)$(am__mv) udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Tpo udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Po
+#	$(AM_V_CC)source='udatapath/dp_fresdwn.c' object='udatapath/udatapath_ofdatapath-dp_fresdwn.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_ofdatapath-dp_fresdwn.o `test -f 'udatapath/dp_fresdwn.c' || echo '$(srcdir)/'`udatapath/dp_fresdwn.c
+
+udatapath/udatapath_ofdatapath-dp_fresdwn.obj: udatapath/dp_fresdwn.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_ofdatapath-dp_fresdwn.obj -MD -MP -MF udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Tpo -c -o udatapath/udatapath_ofdatapath-dp_fresdwn.obj `if test -f 'udatapath/dp_fresdwn.c'; then $(CYGPATH_W) 'udatapath/dp_fresdwn.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_fresdwn.c'; fi`
+	$(AM_V_at)$(am__mv) udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Tpo udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_fresdwn.Po
+#	$(AM_V_CC)source='udatapath/dp_fresdwn.c' object='udatapath/udatapath_ofdatapath-dp_fresdwn.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udatapath/udatapath_ofdatapath-dp_fresdwn.obj `if test -f 'udatapath/dp_fresdwn.c'; then $(CYGPATH_W) 'udatapath/dp_fresdwn.c'; else $(CYGPATH_W) '$(srcdir)/udatapath/dp_fresdwn.c'; fi`
 
 udatapath/udatapath_ofdatapath-dp_ports.o: udatapath/dp_ports.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(udatapath_ofdatapath_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udatapath/udatapath_ofdatapath-dp_ports.o -MD -MP -MF udatapath/$(DEPDIR)/udatapath_ofdatapath-dp_ports.Tpo -c -o udatapath/udatapath_ofdatapath-dp_ports.o `test -f 'udatapath/dp_ports.c' || echo '$(srcdir)/'`udatapath/dp_ports.c

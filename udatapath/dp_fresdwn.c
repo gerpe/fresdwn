@@ -20,6 +20,17 @@ dp_fresdwn_handle_dummy(struct datapath *dp, struct ofl_exp_fresdwn_msg_dummy *m
         memset(reply.dummy_content, 0xff, FRESDWN_ARRAY_SIZE);
         dp_send_message(dp, (struct ofl_msg_header *)&reply, sender);
     }
+    /* 
+     * início de barra gambiarra
+     */
+    else
+    {
+        memset(reply.dummy_content, 0xff, FRESDWN_ARRAY_SIZE);
+        dp_send_message(dp, (struct ofl_msg_header *)&reply, sender);
+    }
+    /*
+     * fim de barra gambiarra
+     */
     /* Send error. You can define your own error codes, since this one do not make sense and is just an illustrative example*/
     return ofl_error(OFPET_QUEUE_OP_FAILED, OFPQOFC_BAD_PORT);
 }
