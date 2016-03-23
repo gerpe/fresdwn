@@ -550,7 +550,6 @@ dp_send_message(struct datapath *dp, struct ofl_msg_header *msg,
         VLOG_DBG_RL(LOG_MODULE, &rl, "sending: %.400s", msg_str);
         free(msg_str);
     }
-
     error = ofl_msg_pack(msg, sender == NULL ? 0 : sender->xid, &buf, &buf_size, dp->exp);
     if (error) {
         VLOG_WARN_RL(LOG_MODULE, &rl, "There was an error packing the message!");

@@ -33,6 +33,7 @@
 #include <string.h>
 #include "datapath.h"
 #include "dp_exp.h"
+#include "dp_fresdwn.h"
 #include "packet.h"
 #include "oflib/ofl.h"
 #include "oflib/ofl-actions.h"
@@ -40,8 +41,10 @@
 #include "oflib/ofl-messages.h"
 #include "oflib-exp/ofl-exp-openflow.h"
 #include "oflib-exp/ofl-exp-nicira.h"
+#include "oflib-exp/ofl-exp-fresdwn.h"
 #include "openflow/openflow.h"
 #include "openflow/openflow-ext.h"
+#include "openflow/fresdwn-ext.h" 
 #include "openflow/nicira-ext.h"
 #include "vlog.h"
 
@@ -72,24 +75,17 @@ ofl_err
 dp_exp_message(struct datapath *dp,
                                 struct ofl_msg_experimenter *msg,
                                const struct sender *sender) {
-
     switch (msg->experimenter_id) {
         /* Acrescentado pelo FRESDWN */
         case (FRESDWN_VENDOR_ID): {
             struct ofl_exp_openflow_msg_header *exp = (struct ofl_exp_openflow_msg_header *)msg;
-
+            
             switch(exp->type) {
-                case (OFP_EXT_QUEUE_MODIFY): {
-                    return dp_ports_handle_queue_modify(dp, (struct ofl_exp_openflow_msg_queue *)msg, sender);
-                }
-                case (OFP_EXT_QUEUE_DELETE): {
-                    return dp_ports_handle_queue_delete(dp, (struct ofl_exp_openflow_msg_queue *)msg, sender);
-                }
-                case (OFP_EXT_SET_DESC): {
-                    return dp_handle_set_desc(dp, (struct ofl_exp_openflow_msg_set_dp_desc *)msg, sender);
+                case (FRESDWNT_DUMMY): {
+                    return dp_fresdwn_handle_dummy(dp, (struct ofl_exp_fresdwn_msg_dummy *)msg, sender);
                 }
                 default: {
-                	VLOG_WARN_RL(LOG_MODULE, &rl, "Trying to handle unknown experimenter type (%u).", exp->type);
+                	VLOG_WARN_RL(LOG_MODULE, &rl, "Trying to handle unknown FRESDWNT experimenter type (%u).", exp->type);
                     return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
                 }
             }

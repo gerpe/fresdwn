@@ -693,34 +693,6 @@ check_nicira_action(const union ofp_action *a, unsigned int len)
     }
 }
 
-
-static int
-check_fresdwn_action(const union ofp_action *a, unsigned int len)
-{
-    const struct fresdwn_action_header *nah;
-
-    if (len < 16) {
-        VLOG_DBG(LOG_MODULE, "FRESDWN vendor action only %u bytes", len);
-        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_LEN);;
-    }
-    nah = (const struct fresdwn_action_header *) a;
-
-    switch (ntohs(nah->subtype)) {
-    case FRESDWN_ACTION_SEND:
-    case FRESDWN_ACTION_RECEIVE:
-    case FRESDWN_ACTION_PROCESSING:
-        return check_action_exact_len(a, len, 16);
-    default:
-        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER);
-        // return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXP_TYPE);
-    }
-}
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 8ce45c3cba0de1873eee457c89660844dc60520c
 static int
 check_action(const union ofp_action *a, unsigned int len, int max_ports,
              bool is_packet_out)
@@ -738,44 +710,18 @@ check_action(const union ofp_action *a, unsigned int len, int max_ports,
         return check_output_port(ntohl(oao->port), max_ports, is_packet_out);
     }
 
-
     case OFPAT_EXPERIMENTER:
-        /* 
-           return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
-                ? check_nicira_action(a, len)
-                : ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
-         */
-        /* modificado pelo FRESDWN  (segue em comentario o original)   aqui
-	return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
-                ? check_nicira_action(a, len)
-                : ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
-        */
-	if ( a->experimenter.experimenter == htonl (NX_VENDOR_ID) ) {
-		return ( check_nicira_action(a,len) );
-	}
-	else
-	{
-		if ( a->experimenter.experimenter == htonl (FRESDWN_VENDOR_ID)){
-			return ( check_fresdwn_action(a,len) );
-		}
-		return ( ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_EXPERIMENTER));
-	}
-<<<<<<< HEAD
+    	if ( a->experimenter.experimenter == htonl (NX_VENDOR_ID) ) {
+    		return ( check_nicira_action(a,len) );
+    	}
+        case OFPAT_SET_QUEUE:
+            return check_setqueue_action(a, len);
 
-=======
->>>>>>> 8ce45c3cba0de1873eee457c89660844dc60520c
-     /*   return (a->experimenter.experimenter == htonl(NX_VENDOR_ID)
-                ? check_nicira_action(a, len)
-                : check_fresdwn_action(a,len));
-      */
-    case OFPAT_SET_QUEUE:
-        return check_setqueue_action(a, len);
-
-    default:
-        VLOG_WARN(LOG_MODULE, "unknown action type %"PRIu16,
-                ntohs(a->type));
-        return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_TYPE);
-    }
+        default:
+            VLOG_WARN(LOG_MODULE, "unknown action type %"PRIu16,
+                    ntohs(a->type));
+            return ofp_mkerr(OFPET_BAD_ACTION, OFPBAC_BAD_TYPE);
+        }
 }
 
 int
