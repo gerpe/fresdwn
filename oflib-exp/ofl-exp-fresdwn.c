@@ -47,9 +47,8 @@ ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t
     }
     /* Pack experimenter header */
     fw = (struct fresdwn_header *)(*buf);
-    fw->fdwnh.experimenter = exp->header.experimenter_id;
-    fw->fdwnh.exp_type =  exp->type;
-    
+    fw->fdwnh.experimenter = htonl(exp->header.experimenter_id);
+    fw->fdwnh.exp_type =  htonl(exp->type);
     return 0;
 }
 
