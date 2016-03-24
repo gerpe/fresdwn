@@ -47,8 +47,8 @@ ofl_exp_fresdwn_msg_pack(struct ofl_msg_experimenter *msg, uint8_t **buf, size_t
     }
     /* Pack experimenter header */
     fw = (struct fresdwn_header *)(*buf);
-    fw->fdwnh.experimenter = exp->header.experimenter_id;
-    fw->fdwnh.exp_type =  exp->type;
+    fw->fdwnh.experimenter = htonl(exp->header.experimenter_id);
+    fw->fdwnh.exp_type =  htonl(exp->type);
     
     return 0;
 }
@@ -62,14 +62,14 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
 */
     struct fresdwn_header *exp;
 /*
- * tentando ignorar o tamanho errado
-
+ * parando de ignorar o tamanho errado
+*/
     if (*len < sizeof(struct fresdwn_header)) {
         OFL_LOG_WARN(LOG_MODULE, "Received EXPERIMENTER message has invalid length (%zu).", *len);
         return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
     }
-
-* tentando ignorar o tamanho errado
+/*
+* parando de ignorar o tamanho errado
 */
     exp = (struct fresdwn_header *)oh;
     switch (ntohl(exp->fdwnh.exp_type)) {
@@ -78,14 +78,15 @@ ofl_exp_fresdwn_msg_unpack(struct ofp_header *oh, size_t *len, struct ofl_msg_ex
             struct ofl_exp_fresdwn_msg_dummy *dst;
 
 /*
- * tentando ignorar o tamanho errado
-
+* parando de ignorar o tamanho errado
+*/
             if (*len < sizeof(struct fresdwn_dummy)) {
                 OFL_LOG_WARN(LOG_MODULE, "Received DUMMY message has invalid length (%zu).", *len);
                 return ofl_error(OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
             }
 
-* tentando ignorar o tamanho errado
+/*
+* parando de ignorar o tamanho errado
 */
             *len -= sizeof(struct fresdwn_dummy);
             src = (struct fresdwn_dummy *)exp;
